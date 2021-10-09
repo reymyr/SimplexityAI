@@ -18,15 +18,11 @@ class AI(ABC):
    		 calculateValue(state:state) → int:
      			Return the value of a state
 	"""
-    def __init__(self, time_limit:int):
+    def __init__(self):
         """
-		Constructor for AI base class. Construct used_time also.
-		
-		[ATTRIBUTES]
-			time_limit : int → time limit for finding move.
+		Constructor for AI base class.
 		"""
-        self.time_limit = time_limit
-        self.used_time = 0
+        pass
 
     def terminate(self, curr_depth:int, state: State) -> bool:
         """
@@ -52,4 +48,18 @@ class AI(ABC):
 		[RETURN]
 			int → the value of the state. 
 		"""        
+        pass
+
+    # Kalo Menang
+    def countObjectiveIsWin(state: State, n_player:int):
+        """
+        [DESC]
+            Function to count heuristic function if a winner is found
+        [PARAMS]
+            state: State -> current State
+        [RETURN]
+            0 if draw
+            +(21-player.quota)*2 if PLayer_1 can win
+            -(21-player.quota)*2 if Player_2 can win
+        """
         pass

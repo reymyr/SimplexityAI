@@ -8,7 +8,7 @@ from src.model import State
 
 from typing import Tuple, List
 from ai import AI
-from src.utility import countObjectiveIsWin, place
+from src.utility import place, is_win, is_full
 
 # class LocalSearch:
 #     def __init__(self):
@@ -43,17 +43,17 @@ class SimulatedAnnealing(AI):
       			Method to calculate delta E value used in simulated annealing.
 	"""
 
-    def __init__(self, time_limit:int) -> None:
+    def __init__(self) -> None:
         """
         Constructor for SimulatedAnnealing class, is the same as AI class.
         
         [ATTRIBUTES]
         time_limit : int → time limit for finding move.
         """
-        AI.__init__(self, time_limit)
+        pass
 
 
-    def find(self, state: State, n_player: int) -> Tuple[str, str]:
+    def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
         """
         Find is a function to find best move using simulated annealing.
             
@@ -64,10 +64,13 @@ class SimulatedAnnealing(AI):
         [RETURN]
         Tuple[str, str] -> the best move for current player.
         """
-        best_movement = ("-", "0")
+        self.thinking_time = time() + thinking_time
+        self.time_limit = thinking_time
+
+        best_movement = ("0", "-")
         found = False
         while(self.calculateTemperature() > 0):
-            successor = self.generateRandomMove(state)
+            successor = self.generateRandomMove(state, n_player)
             delta_e = self.calculateDeltaE(state, successor)
             if(delta_e>0):
                 best_movement = successor
@@ -79,10 +82,11 @@ class SimulatedAnnealing(AI):
                     found = True
 
         if(not(found)):
-            best_movement = self.generateRandomMove(state)
+            best_movement = self.generateRandomMove(state, n_player)
+
         return best_movement
 
-    def generateRandomMove(state: State) -> Tuple[str, str]:
+    def generateRandomMove(state: State, n_player: int) -> Tuple[str, str]:
         """
         Generates a random move based on the current state of the game
             
@@ -92,7 +96,14 @@ class SimulatedAnnealing(AI):
         [RETURN]
         Tuple[str, str] -> a random move chosen based on the current state.
         """
-        return (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
+        if (state.players[n_player].quota[ShapeConstant.CROSS] > 0 and state.players[n_player].quota[ShapeConstant.CIRCLE] > 0 ):
+            return (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
+        elif (state.players[n_player].quota[ShapeConstant.CROSS] > 0):
+            return (random.randint(0, state.board.col), ShapeConstant.CROSS)
+        elif (state.players[n_player].quota[ShapeConstant.CIRCLE] > 0):
+            return (random.randint(0, state.board.col), ShapeConstant.CIRCLE)
+        else:
+            return (0, "-")
 
     def calculateTemperature(self) -> float:
         """
@@ -101,9 +112,11 @@ class SimulatedAnnealing(AI):
         [RETURN]
         float -> the temperature value of the current time.
         """
-        return ((self.time_limit-self.used_time)/self.time_limit)*100
+        current_time = time()
+        diff = self.thinking_time - current_time
+        return (diff/self.time_limit)*100
         
-    def calculateDeltaE(state: State, move: Tuple[str, str]) -> float:
+    def calculateDeltaE(self, state: State, move: Tuple[str, str]) -> float:
         """
         Method to calculate delta E value used in simulated annealing.
             
@@ -115,9 +128,33 @@ class SimulatedAnnealing(AI):
         float -> the temperature value of the current time.
         """
         #TODO ubah fungsi heuristicnya
-        current_value = countObjectiveIsWin(state)
-        
         player = (state.round - 1) % 2
         next_state = copy.deepcopy(state)
         next_state_move = place(next_state, player, move[0], move[1])
-        return countObjectiveIsWin(state) - countObjectiveIsWin(next_state)
+        return self.countObjectiveIsWin(state) - self.countObjectiveIsWin(next_state)
+
+    # Kalo Menang
+    def countObjectiveIsWin(state: State, n_player:int):
+        """
+        [DESC]
+            Function to count heuristic function if a winner is found
+        [PARAMS]
+            state: State -> current State
+        [RETURN]
+            0 if draw
+            +(21-player.quota)*2 if PLayer_1 can win
+            -(21-player.quota)*2 if Player_2 can win
+        """
+        winner = is_win(state.board)
+        if winner:
+            remainder = 0
+            for k, v in state.players[n_player].quota.items():
+                remainder += v
+            score = (remainder+1)*2
+            if(n_player == 1):
+                score = score*(-1)
+            return score
+
+        if is_full(state.board):
+            #Draw
+            return 0

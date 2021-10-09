@@ -40,7 +40,7 @@ class Minimax(AI):
 		This class also inherits methods from AI class (terminate)
 	"""
 
-    def __init__(self, time_limit:int, max_depth:int) -> None:
+    def __init__(self) -> None:
         """
         Constructor for Minimax class. Construct AI base class also.
         
@@ -48,8 +48,6 @@ class Minimax(AI):
             time_limit : int -> time limit for finding move.
             max_depth: int -> maximum depth for searching.		
         """
-        AI.__init__(self, time_limit)
-        self.max_depth = max_depth
 
     def find(self, state: State, maximizing_player: bool) -> Tuple[str, str]:
         """

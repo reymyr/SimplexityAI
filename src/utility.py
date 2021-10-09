@@ -152,32 +152,3 @@ def place(state: State, n_player: int, shape: str, col: str) -> int:
             return row
 
     return -1
-
-# Kalo Menang
-def countObjectiveIsWin(state: State):
-    """
-    [DESC]
-        Function to count heuristic function if a winner is found
-    [PARAMS]
-        state: State -> current State
-    [RETURN]
-        0 if draw
-        +(21-player.quota)*2 if PLayer_1 can win
-        -(21-player.quota)*2 if Player_2 can win
-    """
-    winner = is_win(state.board)
-    if winner:
-        remainder = 0
-        if(winner[0] == state.players[0].shape):
-            # Player 1 Win
-            for k, v in state.players[0].quota.items():
-                remainder += v
-            return (remainder+1)*2
-        else:
-            # Player 2 Win
-            for k, v in state.players[1].quota.items():
-                remainder += v
-            return (remainder+1)*(-2)
-    if is_full(state.board):
-        #Draw
-        return 0
