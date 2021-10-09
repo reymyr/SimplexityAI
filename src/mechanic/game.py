@@ -4,7 +4,7 @@ from time import time
 from src.ai import Minimax
 from src.model import Board, Player, State, Config
 from src.constant import ShapeConstant, GameConstant, Path
-from src.utility import is_out, is_win, is_full, place
+from src.utility import countObjectiveIsWin, is_out, is_win, is_full, place
 
 
 class Game:
@@ -129,8 +129,10 @@ class Game:
             winner = is_win(self.state.board)
             if winner:
                 print(self.state.board)
+                print("Score:", countObjectiveIsWin(self.state))
                 break
             if is_full(self.state.board):
+                print("Score:", countObjectiveIsWin(self.state))
                 break
 
         if winner:
