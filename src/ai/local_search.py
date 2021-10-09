@@ -113,7 +113,7 @@ class SimulatedAnnealing(AI):
         float -> the temperature value of the current time.
         """
         current_time = time()
-        diff = self.thinking_time - current_time
+        diff = int(self.thinking_time - current_time)
         return (diff/self.time_limit)*100
         
     def calculateDeltaE(self, state: State, move: Tuple[str, str]) -> float:
