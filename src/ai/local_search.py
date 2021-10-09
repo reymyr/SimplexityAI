@@ -145,16 +145,4 @@ class SimulatedAnnealing(AI):
             +(21-player.quota)*2 if PLayer_1 can win
             -(21-player.quota)*2 if Player_2 can win
         """
-        winner = is_win(state.board)
-        if winner:
-            remainder = 0
-            for k, v in state.players[n_player].quota.items():
-                remainder += v
-            score = (remainder+1)*2
-            if(n_player == 1):
-                score = score*(-1)
-            return score
-
-        if is_full(state.board):
-            #Draw
-            return 0
+        super().countObjectiveIsWin(state, n_player)
