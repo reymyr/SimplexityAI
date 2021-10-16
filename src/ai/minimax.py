@@ -65,14 +65,13 @@ class Minimax(AI):
         Tuple[str, str] -> the best move for current player.
         """
         self.thinking_time = time() + thinking_time
-        self.time_limit = thinking_time
 
         best_movement = self.minimax(self.max_depth, state, float('-inf'), float('inf'), n_player) #minimax algorithm
-        print(best_movement)
         return (best_movement[0], best_movement[1])
 
     def minimax(self, depth: int, state: State, alpha: int, beta: int, n_player: int) -> Tuple[str, str, float]:
-        if depth == 0 or is_win(state.board) or is_full(state.board):
+        current_time = time()
+        if depth == 0 or is_win(state.board) or is_full(state.board) or current_time>self.thinking_time:
             return ("-", -1, self.calculateValue(state, n_player))
 
         possible_moves = self.generatingPossibleMoves(state, n_player)
@@ -81,6 +80,12 @@ class Minimax(AI):
             next_depth = depth - 1
             selected_move = ("-", 0, 0)
             for move in possible_moves:
+                current_time = time()
+                if(current_time>self.thinking_time):
+                    if(selected_move == ("-", 0, 0)):
+                        return self.generateRandomMove(state, n_player)
+                    else:
+                        return selected_move
                 next_state = copy.deepcopy(state)
                 place_move = place(next_state, n_player, move[1], move[0])
                 eval = self.minimax(next_depth, next_state, alpha, beta, 1)
@@ -90,13 +95,22 @@ class Minimax(AI):
                 alpha = max(alpha, eval[2])
                 if(beta <= alpha):
                     break
-
-            return selected_move
+                
+            if(selected_move == ("-", 0, 0)):
+                return self.generateRandomMove(state, n_player)
+            else:
+                return selected_move  
         else:
             minEval = float('inf')
             next_depth = depth - 1
             selected_move = ("-", 0, 0)
             for move in possible_moves:
+                current_time = time()
+                if(current_time>self.thinking_time):
+                    if(selected_move == ("-", 0, 0)):
+                        return self.generateRandomMove(state, n_player)
+                    else:
+                        return selected_move
                 next_state = copy.deepcopy(state)
                 place_move = place(next_state, n_player, move[1], move[0])
                 eval = self.minimax(next_depth, next_state, alpha, beta, 0)
@@ -106,7 +120,11 @@ class Minimax(AI):
                 beta = min(beta, eval[2])
                 if(beta <= alpha):
                     break
-            return selected_move
+            
+            if(selected_move == ("-", 0, 0)):
+                return self.generateRandomMove(state, n_player)
+            else:
+                return selected_move  
             
         # """
         # Minimax is a function to implement minimax alpha-beta pruning on every possible_move 

@@ -1,4 +1,4 @@
-import random
+
 import copy
 from time import time
 from math import exp
@@ -99,24 +99,7 @@ class SimulatedAnnealing(AI):
 
         return best_movement
 
-    def generateRandomMove(self, state: State, n_player: int) -> Tuple[str, str]:
-        """
-        Generates a random move based on the current state of the game
-            
-        [PARAMETER]
-        state: State -> current game state.
-            
-        [RETURN]
-        Tuple[str, str] -> a random move chosen based on the current state.
-        """
-        if (state.players[n_player].quota[ShapeConstant.CROSS] > 0 and state.players[n_player].quota[ShapeConstant.CIRCLE] > 0 ):
-            return (random.randint(0, state.board.col - 1), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
-        elif (state.players[n_player].quota[ShapeConstant.CROSS] > 0):
-            return (random.randint(0, state.board.col - 1), ShapeConstant.CROSS)
-        elif (state.players[n_player].quota[ShapeConstant.CIRCLE] > 0):
-            return (random.randint(0, state.board.col - 1), ShapeConstant.CIRCLE)
-        else:
-            return (0, "-")
+
 
     def calculateTemperature(self) -> float:
         """
@@ -146,42 +129,3 @@ class SimulatedAnnealing(AI):
         next_state_move = place(next_state, n_player, move[1], move[0])
         return self.calculateValue(state, n_player) - self.calculateValue(next_state, n_player)
 
-    # # Kalo Menang
-    # def countObjectiveIsWin(self, state: State, n_player:int):
-    #     """
-    #     [DESC]
-    #         Function to count heuristic function if a winner is found
-    #     [PARAMS]
-    #         state: State -> current State
-    #     [RETURN]
-    #         0 if draw
-    #         +(21-player.quota)*2 if PLayer_1 can win
-    #         -(21-player.quota)*2 if Player_2 can win
-    #     """
-    #     return super().countObjectiveIsWin(state, n_player)
-    
-    # def countObjectiveIsWin(self, state: State, n_player:int) -> int:
-    #     """
-    #     [DESC]
-    #         Function to count heuristic function if a winner is found
-    #     [PARAMS]
-    #         state: State -> current State
-    #     [RETURN]
-    #         0 if draw
-    #         +(21-player.quota)*2 if PLayer_1 can win
-    #         -(21-player.quota)*2 if Player_2 can win
-    #     """
-    #     print(n_player)
-    #     winner = is_win(state.board)
-    #     if winner:
-    #         remainder = 0
-    #         for k, v in state.players[n_player].quota.items():
-    #             remainder += v
-    #         score = (remainder+1)*2
-    #         if(n_player == 1):
-    #             score = score*(-1)
-    #         return score
-    #     if is_full(state.board):
-    #         #Draw
-    #         return 0
-    #     return 0
