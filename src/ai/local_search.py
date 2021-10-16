@@ -143,14 +143,8 @@ class SimulatedAnnealing(AI):
         #TODO ubah fungsi heuristicnya
         n_player = (state.round - 1) % 2
         next_state = copy.deepcopy(state)
-<<<<<<< HEAD
         next_state_move = place(next_state, n_player, move[1], move[0])
         return self.calculateValue(state, n_player) - self.calculateValue(next_state, n_player)
-=======
-        next_state_move = place(next_state, player, move[1], move[0])
-
-        return self.countObjectiveIsWin(state, player) - self.countObjectiveIsWin(next_state, player)
->>>>>>> 85552d1f3ce909dcb054624e327824a6979cb455
 
     # # Kalo Menang
     # def countObjectiveIsWin(self, state: State, n_player:int):

@@ -68,7 +68,8 @@ class Minimax(AI):
         self.time_limit = thinking_time
 
         best_movement = self.minimax(self.max_depth, state, float('-inf'), float('inf'), n_player) #minimax algorithm
-        return (best_movement[1], best_movement[0])
+        print(best_movement)
+        return (best_movement[0], best_movement[1])
 
     def minimax(self, depth: int, state: State, alpha: int, beta: int, n_player: int) -> Tuple[str, str, float]:
         if depth == 0 or is_win(state.board) or is_full(state.board):
@@ -81,7 +82,7 @@ class Minimax(AI):
             selected_move = ("-", 0, 0)
             for move in possible_moves:
                 next_state = copy.deepcopy(state)
-                move = place(next_state, n_player, move[1], move[0])
+                place_move = place(next_state, n_player, move[1], move[0])
                 eval = self.minimax(next_depth, next_state, alpha, beta, 1)
                 if(eval[2] > maxEval):
                     maxEval = eval[2]
@@ -89,6 +90,7 @@ class Minimax(AI):
                 alpha = max(alpha, eval[2])
                 if(beta <= alpha):
                     break
+
             return selected_move
         else:
             minEval = float('inf')
@@ -96,7 +98,7 @@ class Minimax(AI):
             selected_move = ("-", 0, 0)
             for move in possible_moves:
                 next_state = copy.deepcopy(state)
-                move = place(next_state, n_player, move[1], move[0])
+                place_move = place(next_state, n_player, move[1], move[0])
                 eval = self.minimax(next_depth, next_state, alpha, beta, 0)
                 if(eval[2] < minEval):
                     minEval = eval[2]
