@@ -32,15 +32,15 @@ class SimulatedAnnealing(AI):
 	
     [METHOD]
 	__init__(time_limit:int):
-	Constructor for SimulatedAnnealing classes, Also construct the base AI class.
+	    Constructor for SimulatedAnnealing classes, Also construct the base AI class.
 	find(self, state: State, n_player: int) -> Tuple[str, str]:
-	Find the best move for AI using Simulated Annealing algorithm.
+	    Find the best move for AI using Simulated Annealing algorithm.
 	generateRandomMove(state: State) -> Tuple[str, str]:
-	Generates a random move based on the current state of the game.
+	    Generates a random move based on the current state of the game.
     calculateTemperature() -> float:
-    Method to calculate the temperature based on the current time.
+        Method to calculate the temperature based on the current time.
     calculateDeltaE(state: State, move: Tuple[str, str]) -> float:
-    Method to calculate delta E value used in simulated annealing.
+        Method to calculate delta E value used in simulated annealing.
 	"""
 
     def __init__(self) -> None:
@@ -85,6 +85,17 @@ class SimulatedAnnealing(AI):
 
         if(not(found)):
             best_movement = self.generateRandomMove(state, n_player)
+
+        # # TODO : Remove this part after test end.
+        # # This part is for testing.
+        # player = (state.round - 1) % 2
+        # next_state = copy.deepcopy(state)
+        # next_state_move = place(next_state, player, best_movement[1], best_movement[0])
+        
+        # print("Current is now player ", player)
+        # print("Value for board below is ", self.calculateValue(next_state, player))
+        # # input("Press anything to next")
+        # # End of testing.
 
         return best_movement
 
@@ -133,6 +144,7 @@ class SimulatedAnnealing(AI):
         player = (state.round - 1) % 2
         next_state = copy.deepcopy(state)
         next_state_move = place(next_state, player, move[1], move[0])
+
         return self.countObjectiveIsWin(state, player) - self.countObjectiveIsWin(next_state, player)
 
     # Kalo Menang
