@@ -232,6 +232,8 @@ class AI(ABC):
 			#Draw
 			return 0
 
+		return 0
+
 	# TODO : Check this function usability.		
 	def check_n_streak_at_direction(self, n_streak:int, board: Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> Tuple[str, str]:
 		"""
