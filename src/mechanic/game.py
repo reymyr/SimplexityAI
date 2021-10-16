@@ -44,7 +44,7 @@ class Game:
         if self.config.game_type == GameConstant.BVB:
             if not self.config.is_dump:
                 # You can change model used here
-                model1 = SimulatedAnnealing()
+                model1 = Minimax()
                 model2 = SimulatedAnnealing()
             else:
                 # Don't change this

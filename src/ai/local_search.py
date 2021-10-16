@@ -130,24 +130,24 @@ class SimulatedAnnealing(AI):
         float -> the temperature value of the current time.
         """
         #TODO ubah fungsi heuristicnya
-        player = (state.round - 1) % 2
+        n_player = (state.round - 1) % 2
         next_state = copy.deepcopy(state)
-        next_state_move = place(next_state, player, move[1], move[0])
-        return self.countObjectiveIsWin(state, player) - self.countObjectiveIsWin(next_state, player)
+        next_state_move = place(next_state, n_player, move[1], move[0])
+        return self.calculateValue(state, n_player) - self.calculateValue(next_state, n_player)
 
-    # Kalo Menang
-    def countObjectiveIsWin(self, state: State, n_player:int):
-        """
-        [DESC]
-            Function to count heuristic function if a winner is found
-        [PARAMS]
-            state: State -> current State
-        [RETURN]
-            0 if draw
-            +(21-player.quota)*2 if PLayer_1 can win
-            -(21-player.quota)*2 if Player_2 can win
-        """
-        return super().countObjectiveIsWin(state, n_player)
+    # # Kalo Menang
+    # def countObjectiveIsWin(self, state: State, n_player:int):
+    #     """
+    #     [DESC]
+    #         Function to count heuristic function if a winner is found
+    #     [PARAMS]
+    #         state: State -> current State
+    #     [RETURN]
+    #         0 if draw
+    #         +(21-player.quota)*2 if PLayer_1 can win
+    #         -(21-player.quota)*2 if Player_2 can win
+    #     """
+    #     return super().countObjectiveIsWin(state, n_player)
     
     # def countObjectiveIsWin(self, state: State, n_player:int) -> int:
     #     """
