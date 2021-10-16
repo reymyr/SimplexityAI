@@ -1,24 +1,14 @@
 import random
 import copy
 from time import time
+from typing import Tuple
 
 from src.constant import ShapeConstant
 from src.model import State
 
-from typing import Tuple, List
+
 from src.ai.ai import AI
 from src.utility import place, is_win, is_full
-
-# class Minimax:
-# def __init__(self):
-# pass
-
-# def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
-# self.thinking_time = time() + thinking_time
-
-# best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
-
-# return best_movement
 
 class Minimax(AI):
     """
@@ -70,6 +60,24 @@ class Minimax(AI):
         return (best_movement[0], best_movement[1])
 
     def minimax(self, depth: int, state: State, alpha: int, beta: int, n_player: int) -> Tuple[str, str, float]:
+        """
+        Minimax is a function to implement minimax alpha-beta pruning on every possible_move 
+        while monitoring time and depth constraint. If AI has not reached time limit or depth 
+        limit, then AI will continue to traverse tree until it's reach  leaf node or it's limit. Else if AI 
+        has reach it's limit then AI will immediately return the  best move so far or return null 
+        movement (depend on spek tubes)
+		
+        [PARAMETER]
+            possible_move: List[Tuple[str, str]] -> current available move for current player.
+            depth: int -> current depth of minimax tree.
+            state: state -> current game state.
+            alpha: int -> the best solution so far.
+            beta : int -> the worst solution so far.
+            maximizing_player :bool -> boolean indicating to maximize objective function or not
+        
+        [RETURN]
+		    Tuple[str, str] -> the best move for current player.
+		"""
         current_time = time()
         if depth == 0 or is_win(state.board) or is_full(state.board) or current_time>self.thinking_time:
             return ("-", -1, self.calculateValue(state, n_player))
@@ -87,7 +95,7 @@ class Minimax(AI):
                     else:
                         return selected_move
                 next_state = copy.deepcopy(state)
-                place_move = place(next_state, n_player, move[1], move[0])
+                place(next_state, n_player, move[1], move[0])
                 eval = self.minimax(next_depth, next_state, alpha, beta, 1)
                 if(eval[2] > maxEval):
                     maxEval = eval[2]
@@ -112,7 +120,7 @@ class Minimax(AI):
                     else:
                         return selected_move
                 next_state = copy.deepcopy(state)
-                place_move = place(next_state, n_player, move[1], move[0])
+                place(next_state, n_player, move[1], move[0])
                 eval = self.minimax(next_depth, next_state, alpha, beta, 0)
                 if(eval[2] < minEval):
                     minEval = eval[2]
@@ -125,36 +133,6 @@ class Minimax(AI):
                 return self.generateRandomMove(state, n_player)
             else:
                 return selected_move  
-            
-        # """
-        # Minimax is a function to implement minimax alpha-beta pruning on every possible_move 
-        # while monitoring time and depth constraint. If AI has not reached time limit or depth 
-        # limit, then AI will continue to traverse tree until it's reach  leaf node or it's limit. Else if AI 
-        # has reach it's limit then AI will immediately return the  best move so far or return null 
-        # movement (depend on spek tubes)
-		# [PARAMETER]
-		# possible_move: List[Tuple[str, str]] -> current available move for current player.
-		# depth: int -> current depth of minimax tree.
-		# state: state -> current game state.
-		# alpha: int -> the best solution so far.
-		# beta : int -> the worst solution so far.
-		# maximizing_player :bool -> boolean indicating to maximize objective function or not
-        # [RETURN]
-		# Tuple[str, str] -> the best move for current player.
-		# """
-        
-    def countObjectiveIsWin(self, state: State, n_player:int):
-        """
-        [DESC]
-        Function to count heuristic function if a winner is found
-        [PARAMS]
-        state: State -> current State
-        [RETURN]
-        0 if draw
-        +(21-player.quota)*2 if PLayer_1 can win
-        -(21-player.quota)*2 if Player_2 can win
-        """
-        return super().countObjectiveIsWin(state, n_player)
 
     def generatingPossibleMoves(self, state: State, n_player: int):
         result = []

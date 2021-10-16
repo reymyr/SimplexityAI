@@ -2,24 +2,13 @@
 import copy
 from time import time
 from math import exp
+from typing import Tuple
 
-from src.constant import ShapeConstant
 from src.model import State
-
-from typing import Tuple, List
 from src.ai.ai import AI
-from src.utility import place, is_win, is_full
+from src.utility import place
 
-# class LocalSearch:
-#     def __init__(self):
-#         pass
 
-#     def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
-#         self.thinking_time = time() + thinking_time
-
-#         best_movement = (random.randint(0, state.board.col), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE])) #minimax algorithm
-
-#         return None
 
 class SimulatedAnnealing(AI):
     """
@@ -126,6 +115,6 @@ class SimulatedAnnealing(AI):
         #TODO ubah fungsi heuristicnya
         n_player = (state.round - 1) % 2
         next_state = copy.deepcopy(state)
-        next_state_move = place(next_state, n_player, move[1], move[0])
+        place(next_state, n_player, move[1], move[0])
         return self.calculateValue(state, n_player) - self.calculateValue(next_state, n_player)
 
