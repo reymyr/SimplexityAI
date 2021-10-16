@@ -26,7 +26,10 @@ class AI(ABC):
 	 			Return the value of a state
 	"""
 	# Heuristic value for type 1.
-	# TODO : Create heuristic value for type 1.
+	type1Heuristic:Dict[str, int] = {
+		"SHAPE" : 10,
+		"COLOR": 9
+	}
 
 	# Heuristic value for type 2.
 	# Depend on number of free placeable tile.
@@ -108,7 +111,7 @@ class AI(ABC):
 					# Only check if current piece is not blank.
 					if (state.board[row, col].shape != ShapeConstant.BLANK):
 						# Count type 1 and type 2.
-						type1 = self.countObjectiveType1(state, (row, col), streak)
+						type1 = self.countObjectiveType1(state, (row, col), streak, n_player)
 						type2 = self.countObjectiveType2(state.board, (row, col), streak)
 						
 						# If type 1 or type 2 exist then mark as true.
@@ -128,7 +131,7 @@ class AI(ABC):
 		return ret_val
 
 	# TODO : Finish heuristic value for a type 1. 
-	def countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
+	def countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int], n_player:int) -> float:
 		"""
 		countObjectiveType1 is a function to count heuristic state value if Type1 exist. Type1 happen
 		where there are three connected piece in some way
@@ -137,12 +140,92 @@ class AI(ABC):
 			state: State -> gamestate that will be checked.
 			location: Tuple[int, int] -> row and col
 			dir: Tuple[int, int] -> x direction and y direction
+			n_player: int -> which player (player 1 or 2)
 		[RETURN]
-			None if type 3 not exist on piece with specific row and column or the heuristic value is zero
-			float if type 3 exist and the heuristic value is not 0.
+			0 if type 1 not exist on piece with specific row and column or the heuristic value is zero
+			float if type 1 exist and the heuristic value is not 0.
 		"""
+		# Initialize the return value.
+		ret_val: int = 0
+		# Get the streak.
+		streak = self.check_n_streak_at_direction(3, state.board, location, dir)
 		
-		return 0
+		# If you get the streak.
+		if streak != ["",""]:
+			# Get the starting piece and ending piece.
+			start = [location[0], location[1]]
+			end = [int(location[0]) + 2*int(dir[0]), int(location[1])+ 2*int(dir[1])]
+
+			before_start = [start[0] - dir[0], start[1] - dir[1]]
+			after_end = [end[0] + dir[0], end[1] + dir[1]]
+
+			placeable_start = self.is_placeable(state.board, before_start[0], before_start[1])
+			placeable_end = self.is_placeable(state.board, after_end[0], after_end[1])
+
+			# If able to place in both ends of the streak
+			if placeable_start and placeable_end:
+				# TODO: re-evaluate this case
+				next_state = copy.deepcopy(state)
+				if streak[0] != "":
+					if streak[0] == GameConstant.PLAYER1_SHAPE:
+						place(next_state, 0, streak[0], before_start[1])
+					else:
+						place(next_state, 1, streak[0], before_start[1])
+				# Streak[1] is color.
+				elif streak[1] != "":
+					if streak[1] == GameConstant.PLAYER1_COLOR:
+						shape = GameConstant.PLAYER1_SHAPE if state.players[0].quota[GameConstant.PLAYER1_SHAPE] > 0 else GameConstant.PLAYER2_SHAPE
+						place(next_state, 0, shape, before_start[1])
+					else:
+						shape = GameConstant.PLAYER2_SHAPE if state.players[0].quota[GameConstant.PLAYER2_SHAPE] > 0 else GameConstant.PLAYER1_SHAPE
+						place(next_state, 1, streak[0], before_start[1])
+				ret_val += self.countObjectiveIsWin(next_state, n_player)
+				return ret_val
+
+			# if able to place in one end of the streak
+			elif placeable_start or placeable_end:
+				# Assuming player 1 will maximize the value and player 2 will minimize the value.
+				# Streak[0] is shape.
+				if streak[0] != "":
+					if streak[0] == GameConstant.PLAYER1_SHAPE:
+						ret_val += self.type1Heuristic["SHAPE"]
+					else:
+						ret_val -= self.type1Heuristic["SHAPE"]
+				# Streak[1] is color.
+				if streak[1] != "":
+					if streak[1] == GameConstant.PLAYER1_COLOR:
+						ret_val += self.type1Heuristic["COLOR"]
+					else:
+						ret_val -= self.type1Heuristic["COLOR"]
+
+			# If piece cannot be placed on both ends of the streak
+			else:
+				ret_val += 0
+			
+			return ret_val
+
+		# No streak with length 3
+		else:
+			two_streak = self.check_3_streak_split(state.board, location, dir)
+			if two_streak != ["",""]:
+				start = [location[0], location[1]]
+				end = [int(location[0]) + 3*int(dir[0]), int(location[1])+ 3*int(dir[1])]
+
+				# Assuming player 1 will maximize the value and player 2 will minimize the value.
+				# Streak[0] is shape.
+				if two_streak[0] != "":
+					if two_streak[0] == GameConstant.PLAYER1_SHAPE:
+						ret_val += self.type1Heuristic["SHAPE"]
+					else:
+						ret_val -= self.type1Heuristic["SHAPE"]
+				# Streak[1] is color.
+				if two_streak[1] != "":
+					if two_streak[1] == GameConstant.PLAYER1_COLOR:
+						ret_val += self.type1Heuristic["COLOR"]
+					else:
+						ret_val -= self.type1Heuristic["COLOR"]
+				return ret_val
+			return 0
 	
 	# TODO : Finish heuristic value for a type 2. 
 	# TODO : Check this function usability.
@@ -312,6 +395,94 @@ class AI(ABC):
 
 			# If you get the streak.
 			if mark == n_streak -1:
+				# Change the value of shape or color depending on the iteration.
+				if prior == GameConstant.SHAPE:
+					ret_val[0] = piece.shape
+				else:
+					ret_val[1] = piece.color
+
+		# Return the value.
+		return ret_val 
+
+	def check_3_streak_split(self, board: Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> Tuple[str, str]:
+		"""
+			Function to check 2 streak followed by blank then the same piece from row, col in current board with specific direction
+		[PARAMS]
+			board: Board -> current board.
+			location: Tuple[int, int] -> row and col
+			dir: Tuple[int, int] -> x direction and y direction
+		[RETURN]
+			Tuple[shape|"", color|""] if match on shape then shape will be player_1 or player_2 shape, 
+			if match on color then color will be player_1 or player_2 color.  
+		"""
+		# Initialize return value.
+		ret_val = ["",""]
+
+		# Get the current piece in specific row and column and mark the 'piece'.
+		row = location[0]
+		col = location[1]
+		piece = board[row, col]
+		
+		# Skip checking if current piece is blank piece. 
+		if piece.shape == ShapeConstant.BLANK:
+			return None
+		
+		# Check if equal in shape and equal in color.
+		for prior in GameConstant.WIN_PRIOR:
+			# Initialize the streak and get the direction.
+			row_ax = dir[0]
+			col_ax = dir[1]
+
+			# Count number of blank tiles and streak piece in the direction
+			n_blank = 0
+			n_piece = 1
+			
+			# Move with direction (row_ax, col_ax) one time.
+			row_ = row + row_ax
+			col_ = col + col_ax
+
+			# Loop 3 times to check the next 3 pieces
+			for _ in range(3):
+				if is_out(board, row_, col_):
+					n_piece = 1
+					n_blank = 0
+					break
+
+				# Streak checking.
+				# If blank, incerement n_blank if currnet n_blank = 0 and if placeable
+				if board[row_, col_].shape == ShapeConstant.BLANK:
+					if self.is_placeable(board, row_, col_) and n_blank == 0:
+						n_blank += 1
+					else:
+						n_piece = 1
+						n_blank = 0
+						break
+					
+				# Checking for shape but current shape not equal with 'piece' shape.
+				else:
+					shape_condition = (
+						prior == GameConstant.SHAPE
+						and piece.shape != board[row_, col_].shape
+					)
+					# Checking for color but current color not equal with  'piece' color.
+					color_condition = (
+						prior == GameConstant.COLOR
+						and piece.color != board[row_, col_].color
+					)
+					# Break if not equal.
+					if shape_condition or color_condition:
+						n_piece = 1
+						n_blank = 0
+						break
+
+					n_piece += 1
+
+				# Move with direction (row_ax, col_ax) one time.
+				row_ += row_ax
+				col_ += col_ax
+
+			# If you get the streak.
+			if n_piece == 3 and n_blank == 1:
 				# Change the value of shape or color depending on the iteration.
 				if prior == GameConstant.SHAPE:
 					ret_val[0] = piece.shape
