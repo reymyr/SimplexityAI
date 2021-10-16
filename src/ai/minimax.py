@@ -57,6 +57,13 @@ class Minimax(AI):
         self.thinking_time = time() + thinking_time
 
         best_movement = self.minimax(self.max_depth, state, float('-inf'), float('inf'), n_player) #minimax algorithm
+        player = (state.round - 1) % 2
+        next_state = copy.deepcopy(state)
+        next_state_move = place(next_state, player, best_movement[1], best_movement[0])
+        print("minimax", best_movement)
+        print("Current is now player ", player)
+        print("Value for board below is ", self.calculateValue(next_state, player))
+        print("Current logarithm is minimax")
         return (best_movement[0], best_movement[1])
 
     def minimax(self, depth: int, state: State, alpha: int, beta: int, n_player: int) -> Tuple[str, str, float]:
@@ -134,18 +141,4 @@ class Minimax(AI):
             else:
                 return selected_move  
 
-    def generatingPossibleMoves(self, state: State, n_player: int):
-        result = []
-        
-        for col in range(state.board.col):
-            if(state.players[n_player].quota[ShapeConstant.CROSS] > 0):
-                next_state = copy.deepcopy(state)
-                move = place(next_state, n_player, ShapeConstant.CROSS, col)
-                if(move != -1):
-                    result.append((col, ShapeConstant.CROSS))
-            if(state.players[n_player].quota[ShapeConstant.CIRCLE] > 0):
-                next_state = copy.deepcopy(state)
-                move = place(next_state, n_player, ShapeConstant.CIRCLE, col)
-                if(move != -1):
-                    result.append((col, ShapeConstant.CIRCLE))
-        return result
+

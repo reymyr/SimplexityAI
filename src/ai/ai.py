@@ -1,9 +1,10 @@
 import random
+import copy
 from abc import ABC
 from typing import Tuple, Dict
 
 from src.model import Piece, Board, State
-from src.utility import is_win, is_full, is_out
+from src.utility import is_win, is_full, is_out, place
 from src.constant import ShapeConstant, GameConstant
 
 class AI(ABC):
@@ -398,6 +399,21 @@ class AI(ABC):
 		if (row == 5):
 			return True
 		return board[row+1, col].shape != ShapeConstant.BLANK
+	
+	def generatingPossibleMoves(self, state: State, n_player: int):
+		result = []
+		for col in range(state.board.col):
+			if(state.players[n_player].quota[ShapeConstant.CROSS] > 0):
+				next_state = copy.deepcopy(state)
+				move = place(next_state, n_player, ShapeConstant.CROSS, col)
+				if(move != -1):
+					result.append((col, ShapeConstant.CROSS))
+			if(state.players[n_player].quota[ShapeConstant.CIRCLE] > 0):
+				next_state = copy.deepcopy(state)
+				move = place(next_state, n_player, ShapeConstant.CIRCLE, col)
+				if(move != -1):
+					result.append((col, ShapeConstant.CIRCLE))
+		return result
 
 	def generateRandomMove(self, state: State, n_player: int) -> Tuple[str, str]:
         # """
@@ -409,12 +425,7 @@ class AI(ABC):
         # [RETURN]
         # Tuple[str, str] -> a random move chosen based on the current state.
         # """
-		if (state.players[n_player].quota[ShapeConstant.CROSS] > 0 and state.players[n_player].quota[ShapeConstant.CIRCLE] > 0 ):
-			return (random.randint(0, state.board.col - 1), random.choice([ShapeConstant.CROSS, ShapeConstant.CIRCLE]))
-		elif (state.players[n_player].quota[ShapeConstant.CROSS] > 0):
-			return (random.randint(0, state.board.col - 1), ShapeConstant.CROSS)
-		elif (state.players[n_player].quota[ShapeConstant.CIRCLE] > 0):
-			return (random.randint(0, state.board.col - 1), ShapeConstant.CIRCLE)
-		else:
-			return (0, "-")
+		possible_move =self.generatingPossibleMoves(state, n_player)
+		random_number = random.randint(0, len(possible_move)-1)
+		return possible_move[random_number]
 		

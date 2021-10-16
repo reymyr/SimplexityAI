@@ -75,16 +75,17 @@ class SimulatedAnnealing(AI):
         if(not(found)):
             best_movement = self.generateRandomMove(state, n_player)
 
-        # # TODO : Remove this part after test end.
-        # # This part is for testing.
-        # player = (state.round - 1) % 2
-        # next_state = copy.deepcopy(state)
-        # next_state_move = place(next_state, player, best_movement[1], best_movement[0])
+        # TODO : Remove this part after test end.
+        # This part is for testing.
+        player = (state.round - 1) % 2
+        next_state = copy.deepcopy(state)
+        next_state_move = place(next_state, player, best_movement[1], best_movement[0])
         
-        # print("Current is now player ", player)
-        # print("Value for board below is ", self.calculateValue(next_state, player))
-        # # input("Press anything to next")
-        # # End of testing.
+        print("Current is now player ", player)
+        print("Value for board below is ", self.calculateValue(next_state, player))
+        print("Current logarithm is local search")
+        # input("Press anything to next")
+        # End of testing.
 
         return best_movement
 
