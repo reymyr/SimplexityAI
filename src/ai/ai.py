@@ -83,7 +83,7 @@ class AI(ABC):
 			float → the value of the state. 
 		"""        
 		# Winning case.
-		if (is_win(state)):
+		if (is_win(state.board)):
 			return self.countObjectiveIsWin(state, n_player)
 
 		# Not Winning case -> checking feature(type) in board.
@@ -92,7 +92,8 @@ class AI(ABC):
 
 		# Only check north, east, and northeast direction because checking otherwise will result
 		# in duplicate feature.
-		streak_way = [(0, 1),(1,0),(1, 1)]
+		# Kanan, atas, ataskanan, bawahkanan
+		streak_way = [(0, 1),(-1,0),(-1, 1),(1,1)]
 
 		# Check for every piece exist on every streak direction.
 		for row in range(state.board.row):
@@ -103,7 +104,7 @@ class AI(ABC):
 				# Loop for every valid direction.
 				for streak in streak_way:
 					# Only check if current piece is not blank.
-					if (state.board[row, col] != ShapeConstant.BLANK):
+					if (state.board[row, col].shape != ShapeConstant.BLANK):
 						# Count type 1 and type 2.
 						type1 = self.countObjectiveType1(state, (row, col), streak)
 						type2 = self.countObjectiveType2(state.board, (row, col), streak)
@@ -139,7 +140,7 @@ class AI(ABC):
 			float if type 3 exist and the heuristic value is not 0.
 		"""
 		
-		return None
+		return 0
 	
 	# TODO : Finish heuristic value for a type 2. 
 	# TODO : Check this function usability.
@@ -161,16 +162,24 @@ class AI(ABC):
 		ret_val: int = 0
 		# Get the streak.
 		streak = self.check_n_streak_at_direction(2, board, location, dir)
+		
 		# If you get the streak.
 		if streak != ["",""]:
 			# Calculate free placeable tiles.
 			# Get the starting piece and ending piece.
 			start = [location[0], location[1]]
-			end = [location[0] + dir[0], location[1]+ dir[1]]
+			end = [int(location[0]) + int(dir[0]), int(location[1])+ int(dir[1])]
 			freeTiles = self.check_placeable_tiles_at_direction(board, start, end, dir)
+
+			
+			# # TODO: Testing
+			# print("I Got streak type 2 of piece in row ",start[0]," col ",start[1],"ending in row ",end[0]," col ",end[1]," at direction ", dir[0], " ", dir[1])
 
 			# Free tile must be greater or equal than 2 to make a score.
 			if freeTiles >=2:
+
+				# # TODO: Testing
+				# print("I Got free tile more than 2", "free tile is: ", freeTiles)
 				
 				# Count the score.
 				# Assuming player 1 will maximize the value and player 2 will minimize the value.
@@ -190,7 +199,7 @@ class AI(ABC):
 				# Return the heuristic evaluation.
 				return ret_val
 
-		return None
+		return 0
 
 	# TODO : Finish heuristic value for a type 3. 
 	def countObjectiveType3(self, col:int) -> float:
@@ -205,7 +214,7 @@ class AI(ABC):
 			float -> heuristic value.
 		"""
 		
-		return None
+		return 0
 
 	def countObjectiveIsWin(self, state: State, n_player:int) -> int:
 		"""
@@ -223,7 +232,7 @@ class AI(ABC):
 			remainder = 0
 			for k, v in state.players[n_player].quota.items():
 				remainder += v
-			score = (remainder+1)*2
+			score = (remainder+1)*3
 			if(n_player == 1):
 				score = score*(-1)
 			return score
@@ -337,15 +346,15 @@ class AI(ABC):
 		start_col_ = start_col + start_col_ax
 
 		# While place_able then loop.
-		while (self.is_placeable(board, start_col_)):
+		while (self.is_placeable(board, start_row_, start_col_)):
 			ret_val += 1
 			start_row_ = start_row_ + start_row_ax
 			start_col_ = start_col_ + start_col_ax
 		
 		# Count from end.
 		# Count free tile from end with direction = dir
-		end_row = start[0]
-		end_col = start[1]
+		end_row = end[0]
+		end_col = end[1]
 		end_row_ax = dir[0]
 		end_col_ax = dir[1]
 			
@@ -354,7 +363,7 @@ class AI(ABC):
 		end_col_ = end_col + end_col_ax
 
 		# While place_able then loop.
-		while (self.is_placeable(board, end_col_)):
+		while (self.is_placeable(board, end_row_, end_col_)):
 			ret_val += 1
 			end_row_ = end_row_ + end_row_ax
 			end_col_ = end_col_ + end_col_ax
@@ -385,7 +394,7 @@ class AI(ABC):
 
 		# True if tile under current tile is already occupied, or if current tile at depth zero then 
 		# true.
-		if (row ==0):
+		if (row == 5):
 			return True
-		return board[row-1, col].shape != ShapeConstant.BLANK
+		return board[row+1, col].shape != ShapeConstant.BLANK
 		
