@@ -54,7 +54,17 @@ class AI(ABC):
 	}
 
 	# Heuristic value for type 3.
-	# TODO : Create heuristic value for type 3.
+	# Depend on column position
+	# TODO : Re-evaluate the heuristic value.
+	type3Heuristic:Dict[int, float] = {
+		0 : 0.5,
+		1 : 1,
+		2 : 1.5,
+		3 : 2,
+		4 : 1.5,
+		5 : 1,
+		6 : 0.5
+	}
 	
 	def __init__(self):
 		"""
@@ -294,8 +304,8 @@ class AI(ABC):
 		[RETURN]
 			float -> heuristic value.
 		"""
-		
-		return 0
+		ret_val = self.type3Heuristic[col]
+		return ret_val
 
 	def countObjectiveIsWin(self, state: State, n_player:int) -> int:
 		"""
