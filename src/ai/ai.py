@@ -176,20 +176,21 @@ class AI(ABC):
 			if placeable_start and placeable_end:
 				# TODO: re-evaluate this case
 				next_state = copy.deepcopy(state)
-				if streak[0] != "":
-					if streak[0] == GameConstant.PLAYER1_SHAPE:
-						place(next_state, 0, streak[0], before_start[1])
-					else:
-						place(next_state, 1, streak[0], before_start[1])
-				# Streak[1] is color.
-				elif streak[1] != "":
-					if streak[1] == GameConstant.PLAYER1_COLOR:
-						shape = GameConstant.PLAYER1_SHAPE if state.players[0].quota[GameConstant.PLAYER1_SHAPE] > 0 else GameConstant.PLAYER2_SHAPE
-						place(next_state, 0, shape, before_start[1])
-					else:
-						shape = GameConstant.PLAYER2_SHAPE if state.players[0].quota[GameConstant.PLAYER2_SHAPE] > 0 else GameConstant.PLAYER1_SHAPE
-						place(next_state, 1, streak[0], before_start[1])
-				ret_val += self.countObjectiveIsWin(next_state, n_player)
+
+				if streak[0] == GameConstant.PLAYER1_SHAPE and state.players[0].quota[GameConstant.PLAYER1_SHAPE] != 0:
+					place(next_state, 0, streak[0], before_start[1])
+					ret_val += self.countObjectiveIsWin(next_state, 0)
+				elif streak[0] == GameConstant.PLAYER2_SHAPE and state.players[1].quota[GameConstant.PLAYER2_SHAPE] != 0:
+					place(next_state, 1, streak[0], before_start[1])
+					ret_val += self.countObjectiveIsWin(next_state, 1)
+				elif streak[1] == GameConstant.PLAYER1_COLOR:
+					shape = GameConstant.PLAYER1_SHAPE if state.players[0].quota[GameConstant.PLAYER1_SHAPE] > 0 else GameConstant.PLAYER2_SHAPE
+					place(next_state, 0, shape, before_start[1])
+					ret_val += self.countObjectiveIsWin(next_state, 0)
+				elif streak[1] == GameConstant.PLAYER2_COLOR:
+					shape = GameConstant.PLAYER2_SHAPE if state.players[1].quota[GameConstant.PLAYER2_SHAPE] > 0 else GameConstant.PLAYER1_SHAPE
+					place(next_state, 1, shape, before_start[1])
+					ret_val += self.countObjectiveIsWin(next_state, 1)
 				return ret_val
 
 			# if able to place in one end of the streak
