@@ -55,15 +55,23 @@ class Minimax(AI):
         Tuple[str, str] -> the best move for current player.
         """
         self.thinking_time = time() + thinking_time
-
         best_movement = self.minimax(self.max_depth, state, float('-inf'), float('inf'), n_player) #minimax algorithm
+        
+        # TODO : Remove this part after test end.
+        # This part is for testing.
         player = (state.round - 1) % 2
         next_state = copy.deepcopy(state)
-        next_state_move = place(next_state, player, best_movement[1], best_movement[0])
-        print("minimax", best_movement)
-        print("Current is now player ", player)
+        place(next_state, player, best_movement[1], best_movement[0])
+        
+        print("Current algorithm is minimax")
+        print("Choosen movement is ", best_movement)
+        print("Current is now player ", player + 1)
         print("Value for board below is ", self.calculateValue(next_state, player))
-        print("Current logarithm is minimax")
+        # print("Available move for this turn is")
+        # possible_move =self.generatingPossibleMoves(state, n_player)
+        # print(possible_move)
+        # End of testing.
+        
         return (best_movement[0], best_movement[1])
 
     def minimax(self, depth: int, state: State, alpha: int, beta: int, n_player: int) -> Tuple[str, str, float]:

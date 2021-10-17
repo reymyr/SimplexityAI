@@ -208,8 +208,6 @@ class AI(ABC):
 		else:
 			two_streak = self.check_3_streak_split(state.board, location, dir)
 			if two_streak != ["",""]:
-				start = [location[0], location[1]]
-				end = [int(location[0]) + 3*int(dir[0]), int(location[1])+ 3*int(dir[1])]
 
 				# Assuming player 1 will maximize the value and player 2 will minimize the value.
 				# Streak[0] is shape.
@@ -227,8 +225,6 @@ class AI(ABC):
 				return ret_val
 			return 0
 	
-	# TODO : Finish heuristic value for a type 2. 
-	# TODO : Check this function usability.
 	def countObjectiveType2(self, board:Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
 		"""
 		countObjectiveType2 is a function to count heuristic state value if Type2 exist. Type2 happen
@@ -328,7 +324,6 @@ class AI(ABC):
 
 		return 0
 
-	# TODO : Check this function usability.		
 	def check_n_streak_at_direction(self, n_streak:int, board: Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> Tuple[str, str]:
 		"""
 			Function to check n streak from row, col in current board with specific direction
@@ -492,7 +487,6 @@ class AI(ABC):
 		# Return the value.
 		return ret_val 
 
-	# TODO : Check this function usability.
 	def check_placeable_tiles_at_direction(self, board:Board, start:Tuple[int, int], end:Tuple[int, int], dir:Tuple[int, int]) -> int:
 		"""
 			Function to check number of free placeable tile on direction.
@@ -543,7 +537,6 @@ class AI(ABC):
 		
 		return ret_val
 
-	# TODO : Check this function usability.
 	def is_placeable(self, board:Board, row:int, col:int ) -> bool:
 		"""
 			Function to check can we place piece at column "col" and row "row".

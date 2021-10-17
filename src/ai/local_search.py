@@ -60,7 +60,7 @@ class SimulatedAnnealing(AI):
         found = False
         while(self.calculateTemperature() > 0):
             successor = self.generateRandomMove(state, n_player)
-            delta_e = self.calculateDeltaE(state, successor)
+            delta_e = self.calculateDeltaE(state, successor, n_player)
             if(delta_e>0):
                 best_movement = successor
                 found = True
@@ -79,12 +79,15 @@ class SimulatedAnnealing(AI):
         # This part is for testing.
         player = (state.round - 1) % 2
         next_state = copy.deepcopy(state)
-        next_state_move = place(next_state, player, best_movement[1], best_movement[0])
+        place(next_state, player, best_movement[1], best_movement[0])
         
-        print("Current is now player ", player)
+        print("Current algorithm is local search")
+        print("Choosen movement is ", best_movement)
+        print("Current is now player ", player + 1)
         print("Value for board below is ", self.calculateValue(next_state, player))
-        print("Current logarithm is local search")
-        # input("Press anything to next")
+        # print("Available move for this turn is")
+        # possible_move =self.generatingPossibleMoves(state, n_player)
+        # print(possible_move)
         # End of testing.
 
         return best_movement
@@ -102,7 +105,7 @@ class SimulatedAnnealing(AI):
         diff = int(self.thinking_time - current_time)
         return (diff/self.time_limit)*100
         
-    def calculateDeltaE(self, state: State, move: Tuple[str, str]) -> float:
+    def calculateDeltaE(self, state: State, move: Tuple[str, str], n_player:int) -> float:
         """
         Method to calculate delta E value used in simulated annealing.
             
@@ -113,9 +116,16 @@ class SimulatedAnnealing(AI):
         [RETURN]
         float -> the temperature value of the current time.
         """
-        #TODO ubah fungsi heuristicnya
-        n_player = (state.round - 1) % 2
+        #TODO quickfix sudut pandang minmax
         next_state = copy.deepcopy(state)
         place(next_state, n_player, move[1], move[0])
-        return self.calculateValue(state, n_player) - self.calculateValue(next_state, n_player)
+
+        curr_value = self.calculateValue(state, n_player)
+        next_value = self.calculateValue(next_state, n_player)
+
+        if (n_player == 1):
+            curr_value *= -1
+            next_value *= -1
+        
+        return next_value - curr_value
 
