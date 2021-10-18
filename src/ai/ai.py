@@ -119,7 +119,7 @@ class AI(ABC):
 					# Only check if current piece is not blank.
 					if (state.board[row, col].shape != ShapeConstant.BLANK):
 						# Count type 1 and type 2.
-						type1 = self.countObjectiveType1(state, (row, col), streak, n_player)
+						type1 = self.countObjectiveType1(state, (row, col), streak)
 						type2 = self.countObjectiveType2(state.board, (row, col), streak)
 						
 						# If type 1 or type 2 exist then mark as true.
@@ -139,7 +139,7 @@ class AI(ABC):
 		return ret_val
 
 	# TODO : Finish heuristic value for a type 1. 
-	def countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int], n_player:int) -> float:
+	def countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
 		"""
 		countObjectiveType1 is a function to count heuristic state value if Type1 exist. Type1 happen
 		where there are three connected piece in some way
@@ -148,7 +148,6 @@ class AI(ABC):
 			state: State -> gamestate that will be checked.
 			location: Tuple[int, int] -> row and col
 			dir: Tuple[int, int] -> x direction and y direction
-			n_player: int -> which player (player 1 or 2)
 		[RETURN]
 			0 if type 1 not exist on piece with specific row and column or the heuristic value is zero
 			float if type 1 exist and the heuristic value is not 0.
@@ -177,18 +176,18 @@ class AI(ABC):
 
 				if streak[0] == GameConstant.PLAYER1_SHAPE and state.players[0].quota[GameConstant.PLAYER1_SHAPE] != 0:
 					place(next_state, 0, streak[0], before_start[1])
-					ret_val += self.countObjectiveIsWin(next_state, 0)
+					ret_val += self.type1Heuristic["SHAPE"] * 2
 				elif streak[0] == GameConstant.PLAYER2_SHAPE and state.players[1].quota[GameConstant.PLAYER2_SHAPE] != 0:
 					place(next_state, 1, streak[0], before_start[1])
-					ret_val += self.countObjectiveIsWin(next_state, 1)
+					ret_val -= self.type1Heuristic["SHAPE"] * 2
 				elif streak[1] == GameConstant.PLAYER1_COLOR:
 					shape = GameConstant.PLAYER1_SHAPE if state.players[0].quota[GameConstant.PLAYER1_SHAPE] > 0 else GameConstant.PLAYER2_SHAPE
 					place(next_state, 0, shape, before_start[1])
-					ret_val += self.countObjectiveIsWin(next_state, 0)
+					ret_val += self.type1Heuristic["COLOR"] * 2
 				elif streak[1] == GameConstant.PLAYER2_COLOR:
 					shape = GameConstant.PLAYER2_SHAPE if state.players[1].quota[GameConstant.PLAYER2_SHAPE] > 0 else GameConstant.PLAYER1_SHAPE
 					place(next_state, 1, shape, before_start[1])
-					ret_val += self.countObjectiveIsWin(next_state, 1)
+					ret_val -= self.type1Heuristic["COLOR"] * 2
 				return ret_val
 
 			# if able to place in one end of the streak
@@ -324,17 +323,14 @@ class AI(ABC):
 			state: State -> current State
 		[RETURN]
 			0 if draw
-			+(21-player.quota)*2 if PLayer_1 can win
-			-(21-player.quota)*2 if Player_2 can win
+			+inf if PLayer_1 can win
+			-inf if Player_2 can win
 		"""
 		winner = is_win(state.board)
 		if winner:
-			remainder = 0
-			for k, v in state.players[n_player].quota.items():
-				remainder += v
-			score = (remainder+1)*3
+			score = float("inf")
 			if(winner[0] == state.players[1].shape):
-				score = score*(-1)
+				score = float("-inf")
 			return score
 
 		if is_full(state.board):

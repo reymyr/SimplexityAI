@@ -45,7 +45,7 @@ class Game:
             if not self.config.is_dump:
                 # You can change model used here
                 model1 = Minimax()
-                model2 = SimulatedAnnealing()
+                model2 = Minimax()
             else:
                 # Don't change this
                 model1 = pickle.load(open(Path.BVB_P1, "rb"))
@@ -56,7 +56,7 @@ class Game:
         elif self.config.game_type == GameConstant.PVB:
             if not self.config.is_dump:
                 # You can change model used here
-                model = SimulatedAnnealing()
+                model = Minimax()
             else:
                 # Don't change this
                 model = pickle.load(open(Path.PVB, "rb"))
