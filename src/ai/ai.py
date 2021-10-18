@@ -15,41 +15,31 @@ class AI(ABC):
 		time_limit : int → time limit for finding move.
 		used_time : int → total time used for bot for searching move.
 		type2Heuristic : dictionary for type2 heuristic value.
-
-	[METHOD]
-		__init__(time_limit:int):
-			Constructor for AI classes.
-
-		terminate(curr_depth:int, state: state) → bool:
-			Return boolean indicating whether AI must terminate it's searching or not. 
-   		 calculateValue(state:state) → int:
-	 			Return the value of a state
 	"""
 	# Heuristic value for type 1.
 	type1Heuristic:Dict[str, int] = {
-		"SHAPE" : 10,
-		"COLOR": 9
+		"SHAPE" : 1000000,
+		"COLOR": 900000
 	}
 
 	# Heuristic value for type 2.
 	# Depend on number of free placeable tile.
-	# TODO : Re-evaluate the heuristic value.
 	type2Heuristic:Dict[str, Dict[int, int]] = {
 		"SHAPE" : {
 			0:0,
 			1:0,
-			2:1.5,
-			3:2.5,
-			4:3.5,
-			5:4.5
+			2:15000,
+			3:25000,
+			4:35000,
+			5:45000
 		},
 		"COLOR": {
 			0:0,
 			1:0,
-			2:1,
-			3:2,
-			4:3,
-			5:4
+			2:10000,
+			3:20000,
+			4:30000,
+			5:40000
 		}
 	}
 
@@ -58,10 +48,10 @@ class AI(ABC):
 	# TODO : Re-evaluate the heuristic value.
 	type3Heuristic:Dict[int, float] = {
 		0 : 0,
-		1 : 0.5,
-		2 : 1,
-		3 : 1.5,
-		4 : 2,
+		1 : 40,
+		2 : 70,
+		3 : 120,
+		4 : 200,
 	}
 	
 	def __init__(self):
@@ -70,21 +60,6 @@ class AI(ABC):
 		"""
 		pass
 
-	def terminate(self, curr_depth:int, state: State) -> bool:
-		"""
-		Terminate is a function to evaluate whether AI must terminate it's searching or not. 
-		Either because it's reached max depth, thinking lime limit or winner of game is found.
-		
-		[ATTRIBUTES]
-			curr_depth : int → current depth of searching tree.
-			state: state → current game state.
-		
-		[RETURN]
-			bool → boolean indicating whether AI must terminate it's searching or not. 
-		"""
-		pass
-
-	# TODO : Finish heuristic value for a state. 
 	def calculateValue(self, state: State, n_player:int) -> float:
 		"""
 		Function that is used to calculate the value of a state
@@ -171,7 +146,6 @@ class AI(ABC):
 
 			# If able to place in both ends of the streak
 			if placeable_start and placeable_end:
-				# TODO: re-evaluate this case
 				next_state = copy.deepcopy(state)
 
 				if streak[0] == GameConstant.PLAYER1_SHAPE and state.players[0].quota[GameConstant.PLAYER1_SHAPE] != 0:
@@ -341,7 +315,8 @@ class AI(ABC):
 
 	def check_n_streak_at_direction(self, n_streak:int, board: Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> Tuple[str, str]:
 		"""
-			Function to check n streak from row, col in current board with specific direction
+		Function to check n streak from row, col in current board with specific direction
+		
 		[PARAMS]
 			board: Board -> current board.
 			n_streak: int -> number of streak you want to check.
@@ -504,7 +479,8 @@ class AI(ABC):
 
 	def check_placeable_tiles_at_direction(self, board:Board, start:Tuple[int, int], end:Tuple[int, int], dir:Tuple[int, int]) -> int:
 		"""
-			Function to check number of free placeable tile on direction.
+		Function to check number of free placeable tile on direction.
+		
 		[PARAMS]
 			start: Tuple[int, int] -> row and column of starting piece who make connection.
 			end: Tuple[int, int] -> row and column of end piece who make connection.
@@ -595,15 +571,15 @@ class AI(ABC):
 		return result
 
 	def generateRandomMove(self, state: State, n_player: int) -> Tuple[str, str]:
-        # """
-        # Generates a random move based on the current state of the game
+		'''
+        Generates a random move based on the current state of the game
             
-        # [PARAMETER]
-        # state: State -> current game state.
+        [PARAMETER]
+        state: State -> current game state.
             
-        # [RETURN]
-        # Tuple[str, str] -> a random move chosen based on the current state.
-        # """
+        [RETURN]
+        Tuple[str, str] -> a random move chosen based on the current state.
+		'''
 		possible_move =self.generatingPossibleMoves(state, n_player)
 		random_number = random.randint(0, len(possible_move)-1)
 		return possible_move[random_number]

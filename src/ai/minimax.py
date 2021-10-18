@@ -16,27 +16,26 @@ class Minimax(AI):
 	simplexity game. 
 
 	[ATTRIBUTES]
-	thingking_time_limit: int -> time when bot must finished searching move.
-	max_depth: int -> maximum depth for searching.
-	This class also inherits attribute from AI class (time_limit, used_time, and max_depth).
+	    thingking_time_limit: int -> time when bot must finished searching move.
+	    max_depth: int -> maximum depth for searching.
+	    This class also inherits attribute from AI class (time_limit, used_time, and max_depth).
 
-	[METHOD]
-	__init__(time_limit:int, max_depth:int):
-	Constructor for Minimax classes, Also construct the base AI class.
-	find(self, state: State, maximizing_player: bool, thinking_time: float) -> Tuple[str, str]:
-	Find the best move for AI using Minimax Alpha-Beta pruning algorithm.
-	minimax(possible_move: Tuple[str, str], depth: int, alpha: int, beta: int, 
-	maximizing_player: bool) -> Tuple[str, str]:
-	Minimax Alpha-Beta Pruning algorithm implementation on every possible move.
-	This class also inherits methods from AI class (terminate)
+	[MAIN METHOD]
+	    __init__(time_limit:int, max_depth:int):
+	        Constructor for Minimax classes, Also construct the base AI class.
+	    find(self, state: State, maximizing_player: bool, thinking_time: float) -> Tuple[str, str]:
+	        Find the best move for AI using Minimax Alpha-Beta pruning algorithm.
+	    minimax(possible_move: Tuple[str, str], depth: int, alpha: int, beta: int,  maximizing_player: bool) -> Tuple[str, str]:
+	        Minimax Alpha-Beta Pruning algorithm implementation on every possible move.
 	"""
 
     def __init__(self, max_depth : int = 3) -> None:
         """
 		Constructor for Minimax class. Construct AI base class also.
-		[ATTRIBUTES]
-		time_limit : int -> time limit for finding move.
-		max_depth: int -> maximum depth for searching.		
+		
+        [ATTRIBUTES]
+		    time_limit : int -> time limit for finding move.
+		    max_depth: int -> maximum depth for searching.		
 		"""
         self.max_depth = max_depth
 
@@ -48,11 +47,11 @@ class Minimax(AI):
         used time  attribute on class.
                 
         [PARAMETER]
-        state: state -> current game state.
-        maximizing_player :bool -> boolean indicating to maximize objective function or not.
+            state: state -> current game state.
+            maximizing_player :bool -> boolean indicating to maximize objective function or not.
         
         [RETURN]
-        Tuple[str, str] -> the best move for current player.
+            Tuple[str, str] -> the best move for current player.
         """
         self.thinking_time = time() + thinking_time
         best_movement = self.minimax(self.max_depth, state, float('-inf'), float('inf'), n_player) #minimax algorithm

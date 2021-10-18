@@ -19,7 +19,7 @@ class SimulatedAnnealing(AI):
 	thinking_time_limit: int -> time when bot must finished searching move.
 	This class also inherits attribute from AI class (time_limit, used_time).
 	
-    [METHOD]
+    [MAIN METHOD]
 	__init__(time_limit:int):
 	    Constructor for SimulatedAnnealing classes, Also construct the base AI class.
 	find(self, state: State, n_player: int) -> Tuple[str, str]:
@@ -37,7 +37,7 @@ class SimulatedAnnealing(AI):
         Constructor for SimulatedAnnealing class, is the same as AI class.
         
         [ATTRIBUTES]
-        time_limit : int → time limit for finding move.
+            time_limit : int → time limit for finding move.
         """
         pass
 
@@ -47,11 +47,11 @@ class SimulatedAnnealing(AI):
         Find is a function to find best move using simulated annealing.
             
         [PARAMETER]
-        state: State -> current game state.
-        n_player :int -> which player (player 1 or 2)
+            state: State -> current game state.
+            n_player :int -> which player (player 1 or 2)
 
         [RETURN]
-        Tuple[str, str] -> the best move for current player.
+            Tuple[str, str] -> the best move for current player.
         """
         self.thinking_time = time() + thinking_time
         self.time_limit = thinking_time
@@ -99,7 +99,7 @@ class SimulatedAnnealing(AI):
         Method to calculate the temperature based on the current time.
             
         [RETURN]
-        float -> the temperature value of the current time.
+            float -> the temperature value of the current time.
         """
         current_time = time()
         diff = int(self.thinking_time - current_time)
@@ -110,11 +110,11 @@ class SimulatedAnnealing(AI):
         Method to calculate delta E value used in simulated annealing.
             
         [PARAMETER]
-        state: State -> current game state.
-        move: Tuple[str, str] -> move to calculate next state
+            state: State -> current game state.
+            move: Tuple[str, str] -> move to calculate next state
 
         [RETURN]
-        float -> the temperature value of the current time.
+            float -> the temperature value of the current time.
         """
         #TODO quickfix sudut pandang minmax
         next_state = copy.deepcopy(state)
