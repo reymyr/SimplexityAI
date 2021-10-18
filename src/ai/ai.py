@@ -45,14 +45,16 @@ class AI(ABC):
 	}
 
 	# Heuristic value for type 3.
-	# Depend on how many streak is possible
+	# Depend on column position
 	# TODO : Re-evaluate the heuristic value.
 	type3Heuristic:Dict[int, float] = {
-		0 : 0,
-		1 : 0.5,
-		2 : 1,
-		3 : 1.5,
-		4 : 2,
+		0 : 0.5,
+		1 : 1,
+		2 : 1.5,
+		3 : 2,
+		4 : 1.5,
+		5 : 1,
+		6 : 0.5
 	}
 	
 	def __init__(self):
@@ -111,7 +113,7 @@ class AI(ABC):
 				# If for a specific you cannot generate type1 or type2 feature then it's must be a
 				# single horseman (not connected piece).
 				if (not(type1Ortype2Exist)):
-					ret_val += self.countObjectiveType3(state.board, row, col)		
+					ret_val += self.countObjectiveType3(col)		
 		return ret_val
 
 	# TODO : Finish heuristic value for a type 1. 
@@ -266,7 +268,7 @@ class AI(ABC):
 		return 0
 
 	# TODO : Finish heuristic value for a type 3. 
-	def countObjectiveType3(self, board: Board, row: int, col:int) -> float:
+	def countObjectiveType3(self, col:int) -> float:
 		"""
 		countObjectiveType3 is a function to count heuristic state value if current piece is single horsemen. 
 		single horseman happen there are a single piece not connected to any piece. The heuristic value 
@@ -279,16 +281,7 @@ class AI(ABC):
 		[RETURN]
 			float -> heuristic value.
 		"""
-		ret_val = 0
-		if (self.isRightDiagonalPossible(board, row, col)):
-			ret_val +=1
-		if (self.isLeftDiagonalPossible(board, row, col)):
-			ret_val +=1
-		if (self.isHorizontalPossible(board, row, col)):
-			ret_val +=1
-		if (self.isVerticalPossible(board, row, col)):
-			ret_val +=1
-		return self.type3Heuristic[ret_val]
+		return self.type3Heuristic[col]
 
 	def countObjectiveIsWin(self, state: State) -> int:
 		"""
@@ -621,73 +614,3 @@ class AI(ABC):
 		random_number = random.randint(0, len(possible_move)-1)
 		return possible_move[random_number]
 		
-	# Type 3 Heusristic Support Functions
-	def isRightDiagonalPossible(self, board:Board, row:int, col:int ) -> bool:
-		jumlah = 0
-
-		# Cek kanan atas
-		check_row = row+1
-		check_col = col+1
-		while (self.is_placeable(board, check_row, check_col)):
-			jumlah += 1
-			check_row += 1
-			check_col += 1
-		
-		# Cek kiri bawah
-		check_row = row-1
-		check_col = col-1
-		while (self.is_placeable(board, check_row, check_col)):
-			jumlah += 1
-			check_row -= 1
-			check_col -= 1
-		
-		return (jumlah >= 3)
-
-	def isLeftDiagonalPossible(self, board:Board, row:int, col:int ) -> bool:
-		jumlah = 0
-
-		# Cek kiri atas
-		check_row = row+1
-		check_col = col-1
-		while (self.is_placeable(board, check_row, check_col)):
-			jumlah += 1
-			check_row += 1
-			check_col -= 1
-		
-		# Cek kanan bawah
-		check_row = row-1
-		check_col = col+1
-		while (self.is_placeable(board, check_row, check_col)):
-			jumlah += 1
-			check_row -= 1
-			check_col += 1
-		
-		return (jumlah >= 3)
-
-	def isHorizontalPossible(self, board:Board, row:int, col:int) -> bool:
-		jumlah = 0
-
-		# Cek kanan
-		check_col = col+1
-		while (self.is_placeable(board, row, check_col)):
-			jumlah += 1
-			check_col += 1
-		
-		# Cek kiri
-		check_col = col-1
-		while (self.is_placeable(board, row, check_col)):
-			jumlah += 1
-			check_col -= 1
-		
-		return (jumlah >= 3)
-
-	def isVerticalPossible(self, board:Board, row:int, col:int) -> bool:
-		jumlah = 0
-
-		# Cek atas
-		check_row = row+1
-		while (self.is_placeable(board, check_row, col)):
-			jumlah += 1
-			check_row += 1
-		
-		return (jumlah >= 3)
