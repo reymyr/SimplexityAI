@@ -18,28 +18,29 @@ class AI(ABC):
 	"""
 	# Heuristic value for type 1.
 	type1Heuristic:Dict[str, int] = {
-		"SHAPE" : 1000000,
-		"COLOR": 900000
+		"SHAPE" : 10,
+		"COLOR": 9
 	}
 
 	# Heuristic value for type 2.
 	# Depend on number of free placeable tile.
+	# TODO : Re-evaluate the heuristic value.
 	type2Heuristic:Dict[str, Dict[int, int]] = {
 		"SHAPE" : {
 			0:0,
 			1:0,
-			2:15000,
-			3:25000,
-			4:35000,
-			5:45000
+			2:1.5,
+			3:2.5,
+			4:3.5,
+			5:4.5
 		},
 		"COLOR": {
 			0:0,
 			1:0,
-			2:10000,
-			3:20000,
-			4:30000,
-			5:40000
+			2:1,
+			3:2,
+			4:3,
+			5:4
 		}
 	}
 
@@ -48,10 +49,10 @@ class AI(ABC):
 	# TODO : Re-evaluate the heuristic value.
 	type3Heuristic:Dict[int, float] = {
 		0 : 0,
-		1 : 40,
-		2 : 70,
-		3 : 120,
-		4 : 200,
+		1 : 0.5,
+		2 : 1,
+		3 : 1.5,
+		4 : 2,
 	}
 	
 	def __init__(self):
