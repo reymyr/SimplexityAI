@@ -333,7 +333,7 @@ class AI(ABC):
 			for k, v in state.players[n_player].quota.items():
 				remainder += v
 			score = (remainder+1)*3
-			if(n_player == 1):
+			if(winner[0] == state.players[1].shape):
 				score = score*(-1)
 			return score
 
