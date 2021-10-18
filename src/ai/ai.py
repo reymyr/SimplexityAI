@@ -571,17 +571,25 @@ class AI(ABC):
 	
 	def generatingPossibleMoves(self, state: State, n_player: int):
 		result = []
-		for col in range(state.board.col):
-			if(state.players[n_player].quota[ShapeConstant.CROSS] > 0):
-				next_state = copy.deepcopy(state)
-				move = place(next_state, n_player, ShapeConstant.CROSS, col)
-				if(move != -1):
-					result.append((col, ShapeConstant.CROSS))
-			if(state.players[n_player].quota[ShapeConstant.CIRCLE] > 0):
-				next_state = copy.deepcopy(state)
-				move = place(next_state, n_player, ShapeConstant.CIRCLE, col)
-				if(move != -1):
-					result.append((col, ShapeConstant.CIRCLE))
+		shape0 = [ShapeConstant.CIRCLE, ShapeConstant.CROSS]
+		shape1 = [ShapeConstant.CROSS, ShapeConstant.CIRCLE]
+		
+		if(n_player==0):
+			for shape in shape0:
+				for col in range(state.board.col):
+					if(state.players[n_player].quota[shape] > 0):
+						next_state = copy.deepcopy(state)
+						move = place(next_state, n_player, shape, col)
+						if(move != -1):
+							result.append((col, shape))
+		else:
+			for shape in shape1:
+				for col in range(state.board.col):
+					if(state.players[n_player].quota[shape] > 0):
+						next_state = copy.deepcopy(state)
+						move = place(next_state, n_player, shape, col)
+						if(move != -1):
+							result.append((col, shape))
 		return result
 
 	def generateRandomMove(self, state: State, n_player: int) -> Tuple[str, str]:
