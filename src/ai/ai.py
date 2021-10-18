@@ -73,7 +73,7 @@ class AI(ABC):
 		"""        
 		# Winning case.
 		if (is_win(state.board)):
-			return self.countObjectiveIsWin(state, n_player)
+			return self.countObjectiveIsWin(state)
 
 		# Not Winning case -> checking feature(type) in board.
 		# Initialize return value.
