@@ -94,6 +94,8 @@ class Minimax(AI):
 		"""
         current_time = time()
         if depth == 0 or is_win(state.board) or is_full(state.board) or current_time>self.thinking_time:
+            if(current_time>self.thinking_time):
+                print("BOOM WAKTU ABIS")
             return ("-", -1, self.calculateValue(state, n_player))
 
         possible_moves = self.generatingPossibleMoves(state, n_player)
@@ -104,6 +106,7 @@ class Minimax(AI):
             for move in possible_moves:
                 current_time = time()
                 if(current_time>self.thinking_time):
+                    print("BOOM WAKTU ABIS")
                     if(selected_move == ("-", 0, 0)):
                         random_move = self.generateRandomMove(state, n_player)
                         next_state = copy.deepcopy(state)
@@ -135,6 +138,7 @@ class Minimax(AI):
             for move in possible_moves:
                 current_time = time()
                 if(current_time>self.thinking_time):
+                    print("BOOM WAKTU ABIS")
                     if(selected_move == ("-", 0, 0)):
                         random_move = self.generateRandomMove(state, n_player)
                         next_state = copy.deepcopy(state)
