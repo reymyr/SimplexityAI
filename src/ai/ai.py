@@ -290,7 +290,7 @@ class AI(ABC):
 			ret_val +=1
 		return self.type3Heuristic[ret_val]
 
-	def countObjectiveIsWin(self, state: State, n_player:int) -> int:
+	def countObjectiveIsWin(self, state: State) -> int:
 		"""
 		[DESC]
 			Function to count heuristic function if a winner is found
@@ -303,9 +303,22 @@ class AI(ABC):
 		"""
 		winner = is_win(state.board)
 		if winner:
-			score = float("inf")
-			if(winner[0] == state.players[1].shape):
-				score = float("-inf")
+			remainderP1 = 0
+			remainderP2 = 0
+			for k, v in state.players[0].quota.items():
+				remainderP1 += v
+			for k, v in state.players[1].quota.items():
+				remainderP2 += v
+			
+			if winner[0] == state.players[0].shape:
+				score = 10000 + remainderP1
+			elif(winner[0] == state.players[1].shape):
+				score = -10000 - remainderP2
+			elif winner[1] == state.players[0].color:
+				score = 10000 + remainderP1
+			else:
+				score = -10000 - remainderP2
+
 			return score
 
 		if is_full(state.board):
