@@ -106,7 +106,10 @@ class Minimax(AI):
                 current_time = time()
                 if(current_time>self.thinking_time):
                     if(selected_move == ("-", 0, 0)):
-                        return self.generateRandomMove(state, n_player)
+                        random_move = self.generateRandomMove(state, n_player)
+                        next_state = copy.deepcopy(state)
+                        place_random  = place(next_state, n_player, random_move[1], random_move[0])
+                        return (random_move[1], random_move[0], self.calculateValue(next_state, n_player))
                     else:
                         return selected_move
                 next_state = copy.deepcopy(state)
@@ -120,7 +123,10 @@ class Minimax(AI):
                     break
                 
             if(selected_move == ("-", 0, 0)):
-                return self.generateRandomMove(state, n_player)
+                random_move = self.generateRandomMove(state, n_player)
+                next_state = copy.deepcopy(state)
+                place_random  = place(next_state, n_player, random_move[1], random_move[0])
+                return (random_move[1], random_move[0], self.calculateValue(next_state, n_player))
             else:
                 return selected_move  
         else:
@@ -131,7 +137,10 @@ class Minimax(AI):
                 current_time = time()
                 if(current_time>self.thinking_time):
                     if(selected_move == ("-", 0, 0)):
-                        return self.generateRandomMove(state, n_player)
+                        random_move = self.generateRandomMove(state, n_player)
+                        next_state = copy.deepcopy(state)
+                        place_random  = place(next_state, n_player, random_move[1], random_move[0])
+                        return (random_move[1], random_move[0], self.calculateValue(next_state, n_player))
                     else:
                         return selected_move
                 next_state = copy.deepcopy(state)
@@ -145,7 +154,10 @@ class Minimax(AI):
                     break
             
             if(selected_move == ("-", 0, 0)):
-                return self.generateRandomMove(state, n_player)
+                random_move = self.generateRandomMove(state, n_player)
+                next_state = copy.deepcopy(state)
+                place_random  = place(next_state, n_player, random_move[1], random_move[0])
+                return (random_move[1], random_move[0], self.calculateValue(next_state, n_player))
             else:
                 return selected_move  
 
