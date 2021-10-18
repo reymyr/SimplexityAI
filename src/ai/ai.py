@@ -573,10 +573,25 @@ class AI(ABC):
 		result = []
 		shape0 = [ShapeConstant.CIRCLE, ShapeConstant.CROSS]
 		shape1 = [ShapeConstant.CROSS, ShapeConstant.CIRCLE]
-		
+		column = []
+		if(state.board.col%2)==1:
+			mid = int((state.board.col-1)/2)
+			column.append(mid)
+			for i in range(1,mid+1):
+				column.append(mid+i)
+				column.append(mid-i)
+		else:
+			midR = int(state.board.col/2)
+			midL = midR-1
+			column.append(midL)
+			column.append(midR)
+			for i in range(1,midL+1):
+				column.append(midR+i)
+				column.append(midL-i)
+			
 		if(n_player==0):
 			for shape in shape0:
-				for col in range(state.board.col):
+				for col in column:
 					if(state.players[n_player].quota[shape] > 0):
 						next_state = copy.deepcopy(state)
 						move = place(next_state, n_player, shape, col)
@@ -584,7 +599,7 @@ class AI(ABC):
 							result.append((col, shape))
 		else:
 			for shape in shape1:
-				for col in range(state.board.col):
+				for col in column:
 					if(state.players[n_player].quota[shape] > 0):
 						next_state = copy.deepcopy(state)
 						move = place(next_state, n_player, shape, col)
