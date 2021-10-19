@@ -1,7 +1,7 @@
 import random
 import copy
 from abc import ABC
-from typing import Tuple, Dict
+from typing import List, Tuple, Dict
 
 from src.model import Piece, Board, State
 from src.utility import is_win, is_full, is_out, place
@@ -12,9 +12,38 @@ class AI(ABC):
 	A base class for AI in Simplexity Game.
 
 	[ATTRIBUTES]
-		time_limit : int → time limit for finding move.
-		used_time : int → total time used for bot for searching move.
-		type2Heuristic : dictionary for type2 heuristic value.
+		type1Heuristic : → dictionary for type1 heuristic value.
+		type2Heuristic : → dictionary for type2 heuristic value.
+		type3Heuristic : → dictionary for type3 heuristic value.
+
+	[BASIC METHOD]
+	generateRandomMove(self, state: State, n_player: int) -> Tuple[str, str]:
+    	Generates a random move based on the current state of the game.
+	generatingPossibleMoves(self, state: State, n_player: int) -> Tuple[int, str]:
+		Function to generate possible move that current player can do. The order of the move are optimized 
+		with static heuristic.
+	is_placeable(self, board:Board, row:int, col:int ) -> bool:
+		Function to check can we place piece at column "col" and row "row".
+	check_placeable_tiles_at_direction(self, board:Board, start:Tuple[int, int], end:Tuple[int, int], dir:Tuple[int, int]) -> int:
+		Function to check number of free placeable tile on direction.
+	check_3_streak_split(self, board: Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> Tuple[str, str]:
+		Function to check 2 streak followed by blank then the same piece from row, col in current board 
+		with specific direction.
+	check_n_streak_at_direction(self, n_streak:int, board: Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> Tuple[str, str]:
+		Function to check n streak from row, col in current board with specific direction.
+	countObjectiveIsWin(self, state: State) -> int
+		Function to count heuristic function if a winner is found.
+	countObjectiveType3(self, col:int) -> float:
+		Function to count heuristic state value if current piece is single horsemen. 
+		The heuristic value depend on how many streak is possible.
+	countObjectiveType2(self, board:Board, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
+		Function to count heuristic state value if Type2 exist. Type2 happen where there are 
+		two connected piece in some way. The heuristic value depend on free tile on direction.
+	countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
+		Function to count heuristic state value if Type1 exist. Type1 happen where there are 
+		three connected piece in some way.
+	calculateValue(self, state: State, n_player:int) -> float:
+		Function that is used to calculate the value of a state.
 	"""
 	# Heuristic value for type 1.
 	type1Heuristic:Dict[str, int] = {
@@ -24,7 +53,6 @@ class AI(ABC):
 
 	# Heuristic value for type 2.
 	# Depend on number of free placeable tile.
-	# TODO : Re-evaluate the heuristic value.
 	type2Heuristic:Dict[str, Dict[int, int]] = {
 		"SHAPE" : {
 			0:0,
@@ -46,22 +74,15 @@ class AI(ABC):
 
 	# Heuristic value for type 3.
 	# Depend on column position
-	# TODO : Re-evaluate the heuristic value.
 	type3Heuristic:Dict[int, float] = {
-		0 : 0.5,
-		1 : 1,
-		2 : 1.5,
-		3 : 2,
-		4 : 1.5,
-		5 : 1,
-		6 : 0.5
+		0 : 0.1,
+		1 : 0.2,
+		2 : 0.3,
+		3 : 0.4,
+		4 : 0.3,
+		5 : 0.2,
+		6 : 0.1
 	}
-	
-	def __init__(self):
-		"""
-		Constructor for AI base class.
-		"""
-		pass
 
 	def calculateValue(self, state: State, n_player:int) -> float:
 		"""
@@ -115,8 +136,7 @@ class AI(ABC):
 				if (not(type1Ortype2Exist)):
 					ret_val += self.countObjectiveType3(col)		
 		return ret_val
-
-	# TODO : Finish heuristic value for a type 1. 
+ 
 	def countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
 		"""
 		countObjectiveType1 is a function to count heuristic state value if Type1 exist. Type1 happen
@@ -267,7 +287,6 @@ class AI(ABC):
 
 		return 0
 
-	# TODO : Finish heuristic value for a type 3. 
 	def countObjectiveType3(self, col:int) -> float:
 		"""
 		countObjectiveType3 is a function to count heuristic state value if current piece is single horsemen. 
@@ -562,7 +581,19 @@ class AI(ABC):
 			return True
 		return board[row+1, col].shape != ShapeConstant.BLANK
 	
-	def generatingPossibleMoves(self, state: State, n_player: int):
+	def generatingPossibleMoves(self, state: State, n_player: int) -> Tuple[int, str]:
+		"""
+		Function to generate possible move that current player can do. The order of the move
+		are optimized with static heuristic
+
+		[PARAMS]
+			state : State -> the game state.
+			n_player: int -> number of current player.
+		
+		[RETURN]
+			Tuple[int, str] -> first element(int) are the column you want to put new piece
+							-> second element(str) are the shape of piece you choose
+		"""
 		result = []
 		shape0 = [ShapeConstant.CIRCLE, ShapeConstant.CROSS]
 		shape1 = [ShapeConstant.CROSS, ShapeConstant.CIRCLE]
@@ -586,18 +617,33 @@ class AI(ABC):
 			for shape in shape0:
 				for col in column:
 					if(state.players[n_player].quota[shape] > 0):
-						next_state = copy.deepcopy(state)
-						move = place(next_state, n_player, shape, col)
-						if(move != -1):
+						# # Hard way.
+						# next_state = copy.deepcopy(state)
+						# move = place(next_state, n_player, shape, col)
+						# if(move != -1):
+						# 	result.append((col, shape))
+
+						# Alternative way
+						if (state.board[0, col].shape == ShapeConstant.BLANK):
 							result.append((col, shape))
+					# else:
+					# 	break
 		else:
 			for shape in shape1:
 				for col in column:
 					if(state.players[n_player].quota[shape] > 0):
-						next_state = copy.deepcopy(state)
-						move = place(next_state, n_player, shape, col)
-						if(move != -1):
+						# Hard way.
+						# next_state = copy.deepcopy(state)
+						# move = place(next_state, n_player, shape, col)
+						# if(move != -1):
+						# 	result.append((col, shape))
+						
+						# Alternative way
+						if (state.board[0, col].shape == ShapeConstant.BLANK):
 							result.append((col, shape))
+					# else:
+					# 	break
+					
 		return result
 
 	def generateRandomMove(self, state: State, n_player: int) -> Tuple[str, str]:
@@ -605,10 +651,10 @@ class AI(ABC):
         Generates a random move based on the current state of the game
             
         [PARAMETER]
-        state: State -> current game state.
+        	state: State -> current game state.
             
         [RETURN]
-        Tuple[str, str] -> a random move chosen based on the current state.
+        	Tuple[str, str] -> a random move chosen based on the current state.
 		'''
 		possible_move =self.generatingPossibleMoves(state, n_player)
 		random_number = random.randint(0, len(possible_move)-1)
