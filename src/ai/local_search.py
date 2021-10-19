@@ -55,7 +55,7 @@ class LocalSearchGroup2:
         countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
             Function to count heuristic state value if Type1 exist. Type1 happen where there are 
             three connected piece in some way.
-        calculateValue(self, state: State, n_player:int) -> float:
+        calculateValue(self, state: State) -> float:
             Function that is used to calculate the value of a state.
 	"""
 
@@ -98,7 +98,7 @@ class LocalSearchGroup2:
 		6 : 0.1
 	}
     
-    def calculateValue(self, state: State, n_player:int) -> float:
+    def calculateValue(self, state: State) -> float:
         """
 		Function that is used to calculate the value of a state
 
@@ -271,16 +271,8 @@ class LocalSearchGroup2:
             end = [int(location[0]) + int(dir[0]), int(location[1])+ int(dir[1])]
             freeTiles = self.check_placeable_tiles_at_direction(board, start, end, dir)
 
-            
-            # # TODO: Testing
-            # print("I Got streak type 2 of piece in row ",start[0]," col ",start[1],"ending in row ",end[0]," col ",end[1]," at direction ", dir[0], " ", dir[1])
-
             # Free tile must be greater or equal than 2 to make a score.
             if freeTiles >=2:
-
-                # # TODO: Testing
-                # print("I Got free tile more than 2", "free tile is: ", freeTiles)
-                
                 # Count the score.
                 # Assuming player 1 will maximize the value and player 2 will minimize the value.
                 # Streak[0] is shape.
@@ -674,16 +666,6 @@ class LocalSearchGroup2:
         random_number = random.randint(0, len(possible_move)-1)
         return possible_move[random_number]
 
-    def __init__(self) -> None:
-        """
-        Constructor for SimulatedAnnealing class, is the same as AI class.
-        
-        [ATTRIBUTES]
-            time_limit : int → time limit for finding move.
-        """
-        pass
-
-
     def find(self, state: State, n_player: int, thinking_time: float) -> Tuple[str, str]:
         """
         Find is a function to find best move using simulated annealing.
@@ -717,24 +699,7 @@ class LocalSearchGroup2:
         if(not(found)):
             best_movement = self.generateRandomMove(state, n_player)
 
-        # TODO : Remove this part after test end.
-        # This part is for testing.
-        # player = (state.round - 1) % 2
-        # next_state = copy.deepcopy(state)
-        # place(next_state, player, best_movement[1], best_movement[0])
-        
-        # print("Current algorithm is local search")
-        # print("Choosen movement is ", best_movement)
-        # print("Current is now player ", player + 1)
-        # print("Value for board below is ", self.calculateValue(next_state, player))
-        # print("Available move for this turn is")
-        # possible_move =self.generatingPossibleMoves(state, n_player)
-        # print(possible_move)
-        # End of testing.
-
         return best_movement
-
-
 
     def calculateTemperature(self) -> float:
         """
@@ -758,12 +723,11 @@ class LocalSearchGroup2:
         [RETURN]
             float -> the temperature value of the current time.
         """
-        #TODO quickfix sudut pandang minmax
         next_state = copy.deepcopy(state)
         place(next_state, n_player, move[1], move[0])
 
-        curr_value = self.calculateValue(state, n_player)
-        next_value = self.calculateValue(next_state, n_player)
+        curr_value = self.calculateValue(state)
+        next_value = self.calculateValue(next_state)
 
         if (n_player == 1):
             curr_value *= -1

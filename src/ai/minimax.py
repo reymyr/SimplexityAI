@@ -55,7 +55,7 @@ class MinimaxGroup2:
         countObjectiveType1(self, state:State, location:Tuple[int, int],  dir:Tuple[int, int]) -> float:
             Function to count heuristic state value if Type1 exist. Type1 happen where there are 
             three connected piece in some way.
-        calculateValue(self, state: State, n_player:int) -> float:
+        calculateValue(self, state: State) -> float:
             Function that is used to calculate the value of a state.
 	"""
 # Heuristic value for type 1.
@@ -98,7 +98,7 @@ class MinimaxGroup2:
 	}
 # ==========================================[BASIC METHOD]==========================================
     
-    def calculateValue(self, state: State, n_player:int) -> float:
+    def calculateValue(self, state: State) -> float:
         """
 		Function that is used to calculate the value of a state
 
@@ -271,16 +271,8 @@ class MinimaxGroup2:
             end = [int(location[0]) + int(dir[0]), int(location[1])+ int(dir[1])]
             freeTiles = self.check_placeable_tiles_at_direction(board, start, end, dir)
 
-            
-            # # TODO: Testing
-            # print("I Got streak type 2 of piece in row ",start[0]," col ",start[1],"ending in row ",end[0]," col ",end[1]," at direction ", dir[0], " ", dir[1])
-
             # Free tile must be greater or equal than 2 to make a score.
             if freeTiles >=2:
-
-                # # TODO: Testing
-                # print("I Got free tile more than 2", "free tile is: ", freeTiles)
-                
                 # Count the score.
                 # Assuming player 1 will maximize the value and player 2 will minimize the value.
                 # Streak[0] is shape.
@@ -331,9 +323,9 @@ class MinimaxGroup2:
         if winner:
             remainderP1 = 0
             remainderP2 = 0
-            for k, v in state.players[0].quota.items():
+            for _, v in state.players[0].quota.items():
                 remainderP1 += v
-            for k, v in state.players[1].quota.items():
+            for _, v in state.players[1].quota.items():
                 remainderP2 += v
             
             if winner[0] == state.players[0].shape:
@@ -631,32 +623,14 @@ class MinimaxGroup2:
             for shape in shape0:
                 for col in column:
                     if(state.players[n_player].quota[shape] > 0):
-                        # # Hard way.
-                        # next_state = copy.deepcopy(state)
-                        # move = place(next_state, n_player, shape, col)
-                        # if(move != -1):
-                        # 	result.append((col, shape))
-
-                        # Alternative way
                         if (state.board[0, col].shape == ShapeConstant.BLANK):
                             result.append((col, shape))
-                    # else:
-                    # 	break
         else:
             for shape in shape1:
                 for col in column:
                     if(state.players[n_player].quota[shape] > 0):
-                        # Hard way.
-                        # next_state = copy.deepcopy(state)
-                        # move = place(next_state, n_player, shape, col)
-                        # if(move != -1):
-                        # 	result.append((col, shape))
-                        
-                        # Alternative way
                         if (state.board[0, col].shape == ShapeConstant.BLANK):
                             result.append((col, shape))
-                    # else:
-                    # 	break
                     
         return result
 
@@ -703,21 +677,6 @@ class MinimaxGroup2:
         self.thinking_time = time() + thinking_time
         best_movement = self.minimax(self.max_depth, state, float('-inf'), float('inf'), n_player) #minimax algorithm
         
-        # TODO : Remove this part after test end.
-        # This part is for testing.
-        player = (state.round - 1) % 2
-        next_state = copy.deepcopy(state)
-        place(next_state, player, best_movement[1], best_movement[0])
-        
-        print("Current algorithm is minimax")
-        print("Choosen movement is ", best_movement)
-        print("Current is now player ", player + 1)
-        print("Value for board below is ", self.calculateValue(next_state, player))
-        # print("Available move for this turn is")
-        # possible_move =self.generatingPossibleMoves(state, n_player)
-        # print(possible_move)
-        # End of testing.
-        
         return (best_movement[0], best_movement[1])
 
     def minimax(self, depth: int, state: State, alpha: int, beta: int, n_player: int) -> Tuple[str, str, float]:
@@ -743,7 +702,7 @@ class MinimaxGroup2:
         if depth == 0 or is_win(state.board) or is_full(state.board) or current_time>self.thinking_time:
             if(current_time>self.thinking_time):
                 print("BOOM WAKTU ABIS")
-            return ("-", -1, self.calculateValue(state, n_player))
+            return ("-", -1, self.calculateValue(state))
 
         possible_moves = self.generatingPossibleMoves(state, n_player)
         if(n_player == 0):
@@ -757,8 +716,8 @@ class MinimaxGroup2:
                     if(selected_move == ("-", 0, 0)):
                         random_move = self.generateRandomMove(state, n_player)
                         next_state = copy.deepcopy(state)
-                        place_random  = place(next_state, n_player, random_move[1], random_move[0])
-                        return (random_move[0], random_move[1], self.calculateValue(next_state, n_player))
+                        place(next_state, n_player, random_move[1], random_move[0])
+                        return (random_move[0], random_move[1], self.calculateValue(next_state))
                     else:
                         return selected_move
                 next_state = copy.deepcopy(state)
@@ -774,8 +733,8 @@ class MinimaxGroup2:
             if(selected_move == ("-", 0, 0)):
                 random_move = self.generateRandomMove(state, n_player)
                 next_state = copy.deepcopy(state)
-                place_random  = place(next_state, n_player, random_move[1], random_move[0])
-                return (random_move[0], random_move[1], self.calculateValue(next_state, n_player))
+                place(next_state, n_player, random_move[1], random_move[0])
+                return (random_move[0], random_move[1], self.calculateValue(next_state))
             else:
                 return selected_move  
         else:
@@ -789,8 +748,8 @@ class MinimaxGroup2:
                     if(selected_move == ("-", 0, 0)):
                         random_move = self.generateRandomMove(state, n_player)
                         next_state = copy.deepcopy(state)
-                        place_random  = place(next_state, n_player, random_move[1], random_move[0])
-                        return (random_move[0], random_move[1], self.calculateValue(next_state, n_player))
+                        place(next_state, n_player, random_move[1], random_move[0])
+                        return (random_move[0], random_move[1], self.calculateValue(next_state))
                     else:
                         return selected_move
                 next_state = copy.deepcopy(state)
@@ -806,8 +765,8 @@ class MinimaxGroup2:
             if(selected_move == ("-", 0, 0)):
                 random_move = self.generateRandomMove(state, n_player)
                 next_state = copy.deepcopy(state)
-                place_random  = place(next_state, n_player, random_move[1], random_move[0])
-                return (random_move[0], random_move[1], self.calculateValue(next_state, n_player))
+                place(next_state, n_player, random_move[1], random_move[0])
+                return (random_move[0], random_move[1], self.calculateValue(next_state))
             else:
                 return selected_move  
 #===================================================================================================
