@@ -719,14 +719,14 @@ class LocalSearchGroup2:
 
         # TODO : Remove this part after test end.
         # This part is for testing.
-        player = (state.round - 1) % 2
-        next_state = copy.deepcopy(state)
-        place(next_state, player, best_movement[1], best_movement[0])
+        # player = (state.round - 1) % 2
+        # next_state = copy.deepcopy(state)
+        # place(next_state, player, best_movement[1], best_movement[0])
         
-        print("Current algorithm is local search")
-        print("Choosen movement is ", best_movement)
-        print("Current is now player ", player + 1)
-        print("Value for board below is ", self.calculateValue(next_state, player))
+        # print("Current algorithm is local search")
+        # print("Choosen movement is ", best_movement)
+        # print("Current is now player ", player + 1)
+        # print("Value for board below is ", self.calculateValue(next_state, player))
         # print("Available move for this turn is")
         # possible_move =self.generatingPossibleMoves(state, n_player)
         # print(possible_move)
@@ -744,7 +744,7 @@ class LocalSearchGroup2:
             float -> the temperature value of the current time.
         """
         current_time = time()
-        diff = int(self.thinking_time - current_time)
+        diff = self.thinking_time - current_time
         return (diff/self.time_limit)*100
         
     def calculateDeltaE(self, state: State, move: Tuple[str, str], n_player:int) -> float:
