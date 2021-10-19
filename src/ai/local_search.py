@@ -8,7 +8,7 @@ from src.constant import *
 from src.model import *
 from src.utility import *
 
-class LocalSearch2:
+class LocalSearchGroup2:
     """
 	A basic AI class that implement minimax and alpha-beta pruning for finding best move in 
 	simplexity game. 
